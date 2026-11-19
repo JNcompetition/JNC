@@ -49,7 +49,7 @@
 
 *,*::before,*::after{box-sizing:border-box}
 /* 显式再声明一次：`.wrap` 的左右内边距必须在宽度里，否则窄屏会顶出横向滚动 */
-.wrap,.hero-btns,.btn,.card,.searchbar,.chip,.topbar{box-sizing:border-box}
+.wrap,.card,.searchbar,.chip,.topbar{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
@@ -167,19 +167,9 @@ body:not(.is-expanded) .rail .note{display:none}
 }
 .hero h1 em{font-style:normal;color:#FFC97A}
 .hero p{
-  margin:0 0 26px;max-width:34em;color:rgba(255,255,255,.88);
+  margin:0;max-width:34em;color:rgba(255,255,255,.88);
   font-size:clamp(14px,1.9vw,17px);line-height:1.75;
 }
-.hero-btns{display:flex;flex-wrap:wrap;gap:12px}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  min-height:48px;padding:0 22px;border-radius:12px;font-size:15px;font-weight:600;
-  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
-}
-.btn.p{color:#3A2208;background:#F0A04B;box-shadow:0 10px 26px -12px rgba(240,160,75,.9)}
-.btn.s{color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(6px)}
-.btn.t{color:#fff;background:transparent;border:1px solid rgba(255,255,255,.3)}
-.btn:hover{transform:translateY(-1px)}
 
 /* ========== 区块标题 ========== */
 section{padding:clamp(34px,5vw,58px) 0 0}
@@ -282,15 +272,13 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-betw
   .contact-widget{display:none}
 }
 @media (max-width:640px){
-  /* 窄屏首屏：按钮会压在插画上，把中间压暗一档，别让人物从按钮缝里露出来 */
+  /* 窄屏首屏：增强文字区域对比度，同时保留背景插画 */
   .hero::before{
     background:
       linear-gradient(180deg, rgba(6,10,26,.58) 0%, rgba(6,10,26,.66) 62%, rgba(244,242,237,.92) 96%, var(--paper) 100%);
   }
   .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}
   .hero{min-height:auto}
-  .hero-btns{flex-direction:column;align-items:stretch}
-  .btn{width:100%}
   .card{padding:16px}
   .card .ico{width:42px;height:42px;font-size:21px}
   .card h3{font-size:16px}
@@ -301,7 +289,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-betw
 /* 触屏不触发悬停位移 */
 @media (hover:none){
   .card:hover{transform:none;box-shadow:var(--shadow)}
-  .btn:hover{transform:none}
 }
 
 /* ============================================================
@@ -419,13 +406,8 @@ section[id]{scroll-margin-top:74px}
     <!-- 首屏：星云背景 -->
     <div class="hero">
       <div class="wrap">
-        <h1>从杯赛到丘班，<em>一条路走通</em></h1>
-        <p>赛事报名、升学通道、杯赛真题、益智游戏、数学工具、AI 助手——家长最常问的六件事，一站直达。</p>
-        <div class="hero-btns">
-          <a class="btn p" href="#cup">看正在报名的赛事</a>
-          <a class="btn s" href="#paper">丘班测评通道</a>
-          <a class="btn t" href="#tool">打开数学工具</a>
-        </div>
+        <h1>竞赛升学与成长资源，<em>一站直达</em></h1>
+        <p>涵盖五大学科竞赛、各类杯赛与升学通道，并提供真题、益智游戏、数学工具和 AI 助手，陪伴孩子持续成长。</p>
       </div>
     </div>
 
