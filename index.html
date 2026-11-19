@@ -99,6 +99,19 @@ body:not(.is-expanded){--rail-w:124px}
 .rail .cta:hover{background:#A0510D}
 .rail .note{font-size:11.5px;color:var(--muted);line-height:1.6;padding:0 6px}
 
+.contact-widget{
+  position:fixed;top:50%;right:16px;z-index:35;transform:translateY(-50%);
+  width:132px;padding:14px 12px;border:1px solid var(--line);border-radius:16px;
+  background:rgba(255,255,255,.96);box-shadow:var(--shadow);text-align:center;
+}
+.contact-widget h2{margin:0 0 10px;font-size:15px;line-height:1.4}
+.contact-placeholder{display:flex;flex-direction:column;align-items:center;gap:5px}
+.contact-placeholder+.contact-placeholder{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
+.contact-placeholder img{width:64px;height:64px;padding:4px;object-fit:contain;border:1px solid var(--line-soft);border-radius:9px}
+.contact-placeholder span{font-size:11px;color:var(--muted);line-height:1.4}
+.contact-widget a{color:inherit;text-decoration:none}
+.contact-widget a:hover span{color:var(--brand-deep)}
+
 /* 展开/收起按钮：展开时是 ✕，收起时是 ☰ */
 /* 缝线上的手柄：骑在左栏右边线上，箭头指向「点一下会往哪边收」 */
 .rail-toggle{position:fixed;top:104px;left:calc(var(--rail-w) - 15px);
@@ -266,6 +279,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-betw
 
   .g3,.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .contact-widget{display:none}
 }
 @media (max-width:640px){
   /* 窄屏首屏：按钮会压在插画上，把中间压暗一档，别让人物从按钮缝里露出来 */
@@ -372,8 +386,20 @@ section[id]{scroll-margin-top:74px}
       <a href="#ai" title="AI 助手"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l1.9 4.8 4.8 1.9-4.8 1.9L12 17l-1.9-4.8L5.3 10.3l4.8-1.9z"/></svg><span class="lb">AI 助手</span></a>
     </nav>
 
-    <a class="cta" href="#race">本期报名通道</a>
+    <a class="cta" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzY4NTQ2Njk0Mg==&amp;scene=124#wechat_redirect">联系我们</a>
     <p class="note">外链均为第三方网站，内容以官方发布为准。</p>
+  </aside>
+
+  <aside class="contact-widget" aria-labelledby="contactWidgetTitle">
+    <h2 id="contactWidgetTitle">联系我们</h2>
+    <a class="contact-placeholder" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzY4NTQ2Njk0Mg==&amp;scene=124#wechat_redirect" target="_blank" rel="noopener noreferrer" aria-label="打开金诺竞赛公众号">
+      <img src="logo.png" alt="公众号主页入口占位图">
+      <span>进入公众号</span>
+    </a>
+    <div class="contact-placeholder">
+      <img src="logo.png" alt="联系二维码占位图">
+      <span>联系二维码</span>
+    </div>
   </aside>
 
   <div class="scrim" id="scrim" aria-hidden="true"></div>
