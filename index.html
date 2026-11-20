@@ -457,14 +457,8 @@ section[id]{scroll-margin-top:74px}
       </div>
     </section>
 
-    <!-- 杯赛 -->
-    <section id="cup">
-      <div class="wrap">
-        <div class="sec-head"><h2>杯赛</h2><span class="sub" id="cupUpdated"></span></div>
-        <!-- 本模块的卡片由 data/cup.js 渲染：改内容只改那个文件，不用动这里 -->
-        <div class="grid g3" data-module="cup"></div>
-      </div>
-    </section>
+    <!-- 杯赛模块：结构在 sections/cup.js，内容在 data/cup.js，这里只留挂载点 -->
+    <div id="cupMount"></div>
 
     <!-- 升学通道 -->
     <section id="path">
@@ -664,8 +658,9 @@ section[id]{scroll-margin-top:74px}
   </div>
 </div>
 
-<!-- 数据与渲染：先放数据，再渲染卡片（顺序不能反） -->
+<!-- 模块装配：数据 → 结构 → 渲染，顺序不能反 -->
 <script src="data/cup.js"></script>
+<script src="sections/cup.js"></script>
 <script src="data/render.js"></script>
 
 <script>

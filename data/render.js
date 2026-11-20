@@ -17,6 +17,7 @@
   document.querySelectorAll("[data-module]").forEach(function (grid) {
     var key = grid.getAttribute("data-module");
     var list = data[key];
+
     if (!list || !list.length) {
       grid.innerHTML = '<p style="color:#7A7266;font-size:13.5px">暂无内容</p>';
       return;
@@ -37,7 +38,7 @@
       );
     }).join("");
 
-    // 顶部「更新于 …」
+    // 标题右边的「更新于 …」
     var stamp = document.getElementById(key + "Updated");
     if (stamp && data[key + "Updated"]) {
       stamp.textContent = "更新于 " + data[key + "Updated"];

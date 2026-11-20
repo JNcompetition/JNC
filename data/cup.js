@@ -23,21 +23,21 @@ window.SITE_DATA.cupUpdated = "2026-11-20";
 
 window.SITE_DATA.cup = [
   {
-    icon: "🦘",
-    tag: "1–12 年级",
-    hot: true,
-    title: "袋鼠数学 Math Kangaroo",
-    desc: "低龄最友好，分 6 个等级；中国区走 ASDAN 考点报名",
-    url: "https://math-kangaroo.org.cn/",
-    go: "进入官网"
-  },
-  {
     icon: "🌏",
     tag: "官方入口",
     hot: false,
     title: "阿思丹 ASDAN",
     desc: "袋鼠、AMC8、澳洲 AMC、SASMO 等国际赛的中国区信息",
     url: "https://www.seedasdan.asia/",
+    go: "进入官网"
+  },
+   {
+    icon: "🦘",
+    tag: "1–12 年级",
+    hot: true,
+    title: "袋鼠数学 Math Kangaroo",
+    desc: "低龄最友好，分 6 个等级；中国区走 ASDAN 考点报名",
+    url: "https://www.seedasdan.asia/mkchina/",
     go: "进入官网"
   },
   {
