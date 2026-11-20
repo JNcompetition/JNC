@@ -39,9 +39,9 @@
     }).join("");
 
     // 标题右边的「更新于 …」
-    var stamp = document.getElementById(key + "Updated");
+    /*var stamp = document.getElementById(key + "Updated");
     if (stamp && data[key + "Updated"]) {
       stamp.textContent = "更新于 " + data[key + "Updated"];
-    }
+    }*/
   });
 })();

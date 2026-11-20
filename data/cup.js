@@ -19,16 +19,34 @@
 window.SITE_DATA = window.SITE_DATA || {};
 
 /* 数据更新时间，会显示在「杯赛」标题右边；每次改完记得改这里 */
-window.SITE_DATA.cupUpdated = "2026-11-20";
+/*window.SITE_DATA.cupUpdated = "2026-11-20";*/
 
 window.SITE_DATA.cup = [
+    {
+    icon: "🏅",
+    tag: "1–9 年级",
+    hot: true,
+    title: "金诺杯",
+    desc: "以赛促学，以赛定级 考试时间2026 年 12 月 18 日（周五）17:00–18:30",
+    url: "https://mp.weixin.qq.com/s/Ohn5u35Ap0goUHBIg_-NZA",
+    go: "查看通知"
+  },
   {
     icon: "🌏",
     tag: "官方入口",
     hot: false,
     title: "阿思丹 ASDAN",
-    desc: "袋鼠、AMC8、澳洲 AMC、SASMO 等国际赛的中国区信息",
+    desc: "袋鼠、AMC8/10/12、澳洲 AMC、SASMO 等国际赛的中国区信息",
     url: "https://www.seedasdan.asia/",
+    go: "进入官网"
+  },
+  {
+    icon: "🏅",
+    tag: "8年级及以下",
+    hot: true,
+    title: "AMC 8",
+    desc: "8年级及以下均可参与；中国区走 ASDAN 考点报名  1.12报名截止  1.22考试",
+    url: "https://www.seedasdan.asia/amc8/",
     go: "进入官网"
   },
    {
@@ -36,26 +54,9 @@ window.SITE_DATA.cup = [
     tag: "1–12 年级",
     hot: true,
     title: "袋鼠数学 Math Kangaroo",
-    desc: "低龄最友好，分 6 个等级；中国区走 ASDAN 考点报名",
+    desc: "低龄最友好，分 6 个等级；中国区走 ASDAN 考点报名 11.24报名截止 12.4/12.5考试",
     url: "https://www.seedasdan.asia/mkchina/",
     go: "进入官网"
   },
-  {
-    icon: "🏆",
-    tag: "",
-    hot: false,
-    title: "华数之星（原华杯赛）",
-    desc: "数学竞赛赛事入口",
-    url: "https://www.huashuzhixing.cn/",
-    go: "进入官网"
-  },
-  {
-    icon: "🔬",
-    tag: "",
-    hot: false,
-    title: "青少年科技创新大赛",
-    desc: "青少年科技创新赛事入口",
-    url: "https://castic.cyscc.org/",
-    go: "进入官网"
-  }
+ 
 ];
