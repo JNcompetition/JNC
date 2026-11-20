@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -105,10 +105,10 @@ body:not(.is-expanded){--rail-w:124px}
   background:rgba(255,255,255,.96);box-shadow:var(--shadow);text-align:center;
 }
 .contact-widget h2{margin:0 0 10px;font-size:15px;line-height:1.4}
-.contact-placeholder{display:flex;flex-direction:column;align-items:center;gap:5px}
-.contact-placeholder+.contact-placeholder{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
-.contact-placeholder img{width:64px;height:64px;padding:4px;object-fit:contain;border:1px solid var(--line-soft);border-radius:9px}
-.contact-placeholder span{font-size:11px;color:var(--muted);line-height:1.4}
+.contact-entry{display:flex;flex-direction:column;align-items:center;gap:5px}
+.contact-entry+.contact-entry{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
+.contact-entry img{width:88px;height:88px;padding:3px;object-fit:contain;border:1px solid var(--line-soft);border-radius:9px}
+.contact-entry span{font-size:11px;color:var(--muted);line-height:1.4}
 .contact-widget a{color:inherit;text-decoration:none}
 .contact-widget a:hover span{color:var(--brand-deep)}
 
@@ -380,13 +380,13 @@ section[id]{scroll-margin-top:74px}
 
   <aside class="contact-widget" aria-labelledby="contactWidgetTitle">
     <h2 id="contactWidgetTitle">联系我们</h2>
-    <a class="contact-placeholder" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzY4NTQ2Njk0Mg==&amp;scene=124#wechat_redirect" target="_blank" rel="noopener noreferrer" aria-label="打开金诺竞赛公众号">
-      <img src="logo.png" alt="公众号主页入口占位图">
-      <span>进入公众号</span>
+    <a class="contact-entry" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzY4NTQ2Njk0Mg==&amp;scene=124#wechat_redirect" target="_blank" rel="noopener noreferrer" aria-label="打开金诺竞赛公众号">
+      <img src="公众号.jpg" alt="金诺竞赛公众号二维码">
+      <span>关注公众号</span>
     </a>
-    <div class="contact-placeholder">
-      <img src="logo.png" alt="联系二维码占位图">
-      <span>联系二维码</span>
+    <div class="contact-entry">
+      <img src="企微.png" alt="金诺竞赛企业微信二维码">
+      <span>添加企业微信</span>
     </div>
   </aside>
 
@@ -460,35 +460,9 @@ section[id]{scroll-margin-top:74px}
     <!-- 杯赛 -->
     <section id="cup">
       <div class="wrap">
-        <div class="sec-head"><h2>杯赛</h2></div>
-        <div class="grid g3">
-          <a class="card" href="https://math-kangaroo.org.cn/" target="_blank" rel="noopener nofollow">
-            <span class="tag hot">1–12 年级</span>
-            <div class="ico">🦘</div>
-            <h3>袋鼠数学 Math Kangaroo</h3>
-            <p>低龄最友好，分 6 个等级；中国区走 ASDAN 考点报名</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://www.seedasdan.asia/" target="_blank" rel="noopener nofollow">
-            <span class="tag">报名入口</span>
-            <div class="ico">🌏</div>
-            <h3>阿思丹 ASDAN</h3>
-            <p>袋鼠、AMC8、澳洲 AMC、SASMO 等国际赛的中国区报名</p>
-            <div class="go">查看考位</div>
-          </a>
-          <a class="card" href="https://www.huashuzhixing.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🏆</div>
-            <h3>华数之星（原华杯赛）</h3>
-            <p>数学竞赛赛事入口</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://castic.cyscc.org/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🔬</div>
-            <h3>青少年科技创新大赛</h3>
-            <p>青少年科技创新赛事入口</p>
-            <div class="go">进入官网</div>
-          </a>
-        </div>
+        <div class="sec-head"><h2>杯赛</h2><span class="sub" id="cupUpdated"></span></div>
+        <!-- 本模块的卡片由 data/cup.js 渲染：改内容只改那个文件，不用动这里 -->
+        <div class="grid g3" data-module="cup"></div>
       </div>
     </section>
 
@@ -689,6 +663,10 @@ section[id]{scroll-margin-top:74px}
     </footer>
   </div>
 </div>
+
+<!-- 数据与渲染：先放数据，再渲染卡片（顺序不能反） -->
+<script src="data/cup.js"></script>
+<script src="data/render.js"></script>
 
 <script>
 /* 左栏展开/收起：桌面默认展开、窄屏默认收起；点按钮切换，内容跟着推开 */
