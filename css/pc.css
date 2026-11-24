@@ -1,0 +1,101 @@
+/* ============================================================
+   pc.css —— 只在 PC / 平板竖屏以上（≥769px）生效
+   包含：左侧固定导航、折叠按钮、右侧联系浮窗、桌面列数
+   ============================================================ */
+
+@media (min-width:769px){
+
+  /* 左栏宽度：展开 250 / 收起 124 */
+  body{--rail-w:250px}
+  body:not(.is-expanded){--rail-w:124px}
+
+  .main{margin-left:var(--rail-w);transition:margin-left .22s cubic-bezier(.4,0,.2,1)}
+
+  /* ---------- 左栏 ---------- */
+  .rail{
+    position:fixed;top:0;left:0;bottom:0;width:var(--rail-w);z-index:40;overflow:hidden;
+    display:flex;flex-direction:column;gap:22px;
+    padding:26px 18px 20px;background:#FBF5EA;border-right:1px solid var(--line);
+    transition:width .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1);
+  }
+  .brandbar{display:flex;align-items:center;gap:8px;padding:2px 6px}
+  .brand{display:flex;align-items:center;gap:12px;padding:0;flex:1 1 auto;min-width:0}
+  .brand img{width:56px;height:56px;object-fit:contain;flex:0 0 auto}
+  .brand .name{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+  .brand .name b{font-size:17px;letter-spacing:.02em;white-space:nowrap}
+  .brand .name span{font-size:12px;color:var(--muted);letter-spacing:.08em}
+
+  .nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+  .nav a{
+    display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;
+    font-size:15px;color:#403A31;transition:background .15s ease,color .15s ease;
+  }
+  .nav a .ic{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;
+    stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
+  .nav a:hover{background:#EFEBE2;color:var(--ink)}
+  .nav a:hover .ic{opacity:1}
+
+  .rail .cta{
+    margin-top:auto;display:flex;align-items:center;justify-content:center;
+    min-height:46px;padding:0 16px;border-radius:12px;font-size:14.5px;font-weight:600;
+    color:#fff;background:var(--brand-deep);box-shadow:0 6px 16px -8px rgba(184,94,18,.7);
+    transition:transform .15s ease,background .15s ease;
+  }
+  .rail .cta:hover{background:#A0510D}
+  .rail .note{font-size:11.5px;color:var(--muted);line-height:1.6;padding:0 6px}
+
+  /* ---------- 折叠按钮：骑在左栏右边线上 ---------- */
+  .rail-toggle{
+    position:fixed;top:104px;left:calc(var(--rail-w) - 15px);
+    width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
+    background:var(--surface);color:#6B655C;cursor:pointer;padding:0;
+    display:grid;place-items:center;z-index:45;
+    box-shadow:0 2px 10px -4px rgba(30,20,8,.35);
+    transition:left .22s cubic-bezier(.4,0,.2,1),background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .rail-toggle:hover{background:#EFEBE2;border-color:#D6CFC0;color:var(--ink)}
+  .rail-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;transition:transform .22s ease}
+  body:not(.is-expanded) .rail-toggle svg{transform:rotate(180deg)}
+
+  /* ---------- 收起态：只留徽标 ---------- */
+  body:not(.is-expanded) .rail{padding:16px 10px;gap:18px}
+  body:not(.is-expanded) .brandbar{width:100%;padding:0;justify-content:center}
+  body:not(.is-expanded) .brand{justify-content:center;flex:0 0 auto}
+  body:not(.is-expanded) .brand img{width:46px;height:46px}
+  body:not(.is-expanded) .brand .name{display:none}
+  body:not(.is-expanded) .nav{width:100%}
+  body:not(.is-expanded) .nav a{justify-content:center;padding:11px;gap:0}
+  body:not(.is-expanded) .nav a .lb{display:none}
+  body:not(.is-expanded) .rail .cta,
+  body:not(.is-expanded) .rail .note{display:none}
+
+  /* ---------- 右侧联系浮窗 ---------- */
+  .contact-widget{
+    position:fixed;top:50%;right:16px;z-index:35;transform:translateY(-50%);
+    width:132px;padding:14px 12px;border:1px solid var(--line);border-radius:16px;
+    background:rgba(255,255,255,.96);box-shadow:var(--shadow);text-align:center;
+  }
+  .contact-widget h2{margin:0 0 10px;font-size:15px;line-height:1.4}
+  .contact-entry{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .contact-entry+.contact-entry{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
+  .contact-entry img{width:88px;height:88px;padding:3px;object-fit:contain;border:1px solid var(--line-soft);border-radius:9px}
+  .contact-entry span{font-size:11px;color:var(--muted);line-height:1.4}
+  .contact-widget a{color:inherit;text-decoration:none}
+  .contact-widget a:hover span{color:var(--brand-deep)}
+}
+
+/* 中等屏（769–1180）：四列降三列 */
+@media (min-width:769px) and (max-width:1180px){
+  .g4{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* 窄一点的桌面/平板竖屏（769–1024）：左栏收窄，网格两列，隐藏联系浮窗 */
+@media (min-width:769px) and (max-width:1024px){
+  body{--rail-w:124px}
+  body.is-expanded{--rail-w:248px}
+  .rail{padding:14px 8px;gap:14px}
+  .brand img{width:46px;height:46px}
+  .g2,.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .contact-widget{display:none}
+}

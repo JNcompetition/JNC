@@ -6,363 +6,46 @@
 <meta name="description" content="金诺竞赛成长资源站：赛事报名、升学通道、丘班测评、真题、益智游戏、数学工具、AI 助手，一站直达。">
 <meta name="theme-color" content="#F6EFE3">
 <title>金诺 · 竞赛成长资源站</title>
+
 <!-- ============================================================
-  金诺 · 竞赛成长资源站 v2（暖纸 + 星云首屏）
+  这个文件只负责「骨架」：导航 + 首屏 + 搜索 + 8 个挂载点 + 页脚
   ------------------------------------------------------------
-  【跟上一版比改了什么】
-  ① 配色：深蓝星空 → 暖纸白 + 品牌橙，正文对比度达标（AA）
-  ② 字体：楷体只用在首屏大标题，其余换系统黑体，小字更好读
-  ③ 布局：左侧导航栏保留，内容区改成三/四列卡片网格
-  ④ 首屏：星云 Background.jpg 只放首屏，不再全页铺
-  ⑤ 手机：导航变抽屉、卡片单列、按钮 48px 高、去掉了两个星空 CDN 脚本
-  ⑥ 新增：右上角搜索框，可实时过滤全部卡片
+  【改样式】
+    css/base.css    全站通用（颜色变量、卡片、胶囊、页脚）
+    css/pc.css      只在 ≥769px 生效（左侧固定导航、桌面列数）
+    css/mobile.css  只在 ≤768px 生效（顶部栏、抽屉、两列卡片）
 
-  【改配色】只改下面 :root 里的几个变量
-  【加卡片】复制任意 <a class="card"> 一整段，改 href / 图标 / 标题 / 说明 / 标签
+  【改某个板块】
+    data/<板块>.js     只改内容（标题、说明、链接）
+    sections/<板块>.js 只改结构（标题文字、列数、有没有胶囊行）
+
+  【加一个板块】
+    1) 新建 data/xxx.js 和 sections/xxx.js
+    2) 在下面骨架里加一个挂载点：<div id="xxxMount"></div>
+    3) 在页面底部的 script 列表里按顺序加两行
   ============================================================ -->
-<style>
-:root{
-  /* ---- 纸张与墨色 ---- */
-  --paper:#F4F2ED;      /* 页面底色（偏冷，避开“AI 奶油底”） */
-  --surface:#FFFFFF;    /* 卡片底色 */
-  --line:#E3DFD6;       /* 描边 */
-  --line-soft:#EDE9E1;
-  --ink:#1F1B16;        /* 正文 */
-  --muted:#66625A;      /* 次要文字（对纸底 5.6:1） */
 
-  /* ---- 品牌（取自 logo 的橙） ---- */
-  --brand:#E2791C;
-  --brand-deep:#A9530F; /* 文字/按钮用深一档，保证对比度 */
-  --brand-tint:#FAEEE1;
-
-  /* ---- 首屏与页脚 ---- */
-  --night:#14100E;
-
-  --radius:18px;
-  --shadow:0 1px 2px rgba(58,38,16,.05), 0 8px 24px -12px rgba(58,38,16,.18);
-  --shadow-h:0 2px 4px rgba(58,38,16,.07), 0 18px 40px -16px rgba(58,38,16,.28);
-
-  --rail:250px;
-  --font-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
-  --font-kai:"Kaiti SC","KaiTi","STKaiti","楷体",serif;
-}
-
-*,*::before,*::after{box-sizing:border-box}
-/* 显式再声明一次：`.wrap` 的左右内边距必须在宽度里，否则窄屏会顶出横向滚动 */
-.wrap,.card,.searchbar,.chip,.topbar{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{
-  margin:0;font-family:var(--font-body);color:var(--ink);background:var(--paper);
-  line-height:1.65;-webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--brand-deep);outline-offset:3px;border-radius:6px}
-
-/* ========== 整体骨架：固定左栏 + 内容（展开/收起都把内容推开，不遮盖） ========== */
-.shell{display:block;min-height:100vh}
-
-/* ========== 左侧导航 ========== */
-body{--rail-w:250px}
-body:not(.is-expanded){--rail-w:124px}
-.rail{
-  position:fixed;top:0;left:0;bottom:0;width:var(--rail-w);z-index:40;overflow:hidden;
-  display:flex;flex-direction:column;gap:22px;
-  padding:26px 18px 20px;background:#FBF5EA;border-right:1px solid var(--line);
-  transition:width .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1);
-}
-.brandbar{display:flex;align-items:center;gap:8px;padding:2px 6px}
-.brand{display:flex;align-items:center;gap:12px;padding:0;flex:1 1 auto;min-width:0}
-.brand img{width:56px;height:56px;object-fit:contain;flex:0 0 auto}
-.brand .name{display:flex;flex-direction:column;line-height:1.2;min-width:0}
-.brand .name b{font-size:17px;letter-spacing:.02em;white-space:nowrap}
-.brand .name span{font-size:12px;color:var(--muted);letter-spacing:.08em}
-
-.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
-.nav a{
-  display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;
-  font-size:15px;color:#403A31;transition:background .15s ease,color .15s ease;
-}
-.nav a .ic{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;
-  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.72}
-.nav a:hover{background:#EFEBE2;color:var(--ink)}
-.nav a:hover .ic{opacity:1}
-
-.rail .cta{
-  margin-top:auto;display:flex;align-items:center;justify-content:center;
-  min-height:46px;padding:0 16px;border-radius:12px;font-size:14.5px;font-weight:600;
-  color:#fff;background:var(--brand-deep);box-shadow:0 6px 16px -8px rgba(184,94,18,.7);
-  transition:transform .15s ease,background .15s ease;
-}
-.rail .cta:hover{background:#A0510D}
-.rail .note{font-size:11.5px;color:var(--muted);line-height:1.6;padding:0 6px}
-
-.contact-widget{
-  position:fixed;top:50%;right:16px;z-index:35;transform:translateY(-50%);
-  width:132px;padding:14px 12px;border:1px solid var(--line);border-radius:16px;
-  background:rgba(255,255,255,.96);box-shadow:var(--shadow);text-align:center;
-}
-.contact-widget h2{margin:0 0 10px;font-size:15px;line-height:1.4}
-.contact-entry{display:flex;flex-direction:column;align-items:center;gap:5px}
-.contact-entry+.contact-entry{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-soft)}
-.contact-entry img{width:88px;height:88px;padding:3px;object-fit:contain;border:1px solid var(--line-soft);border-radius:9px}
-.contact-entry span{font-size:11px;color:var(--muted);line-height:1.4}
-.contact-widget a{color:inherit;text-decoration:none}
-.contact-widget a:hover span{color:var(--brand-deep)}
-
-/* 展开/收起按钮：展开时是 ✕，收起时是 ☰ */
-/* 缝线上的手柄：骑在左栏右边线上，箭头指向「点一下会往哪边收」 */
-.rail-toggle{position:fixed;top:104px;left:calc(var(--rail-w) - 15px);
-  width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
-  background:var(--surface);color:#6B655C;cursor:pointer;padding:0;
-  display:grid;place-items:center;z-index:45;
-  box-shadow:0 2px 10px -4px rgba(30,20,8,.35);
-  transition:left .22s cubic-bezier(.4,0,.2,1),background .15s ease,border-color .15s ease,color .15s ease}
-.rail-toggle:hover{background:#EFEBE2;border-color:#D6CFC0;color:var(--ink)}
-.rail-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;transition:transform .22s ease}
-body:not(.is-expanded) .rail-toggle svg{transform:rotate(180deg)}
-
-/* 收起态：只剩图标，徽标居中，按钮和文字都藏起来 */
-/* 收起态：只留徽标，站名隐藏；三横杠挪到栏底，让徽标和下面的图标同轴 */
-body:not(.is-expanded) .rail{padding:16px 10px;gap:18px}
-body:not(.is-expanded) .brandbar{width:100%;padding:0;justify-content:center}
-body:not(.is-expanded) .brand{justify-content:center;flex:0 0 auto}
-body:not(.is-expanded) .brand img{width:46px;height:46px}
-body:not(.is-expanded) .brand .name{display:none}
-body:not(.is-expanded) .nav{width:100%}
-body:not(.is-expanded) .nav a{justify-content:center;padding:11px;gap:0}
-body:not(.is-expanded) .nav a .lb{display:none}
-body:not(.is-expanded) .rail .cta,
-body:not(.is-expanded) .rail .note{display:none}
-
-/* ========== 移动端顶栏 + 抽屉 ========== */
-.topbar{display:none}
-.scrim{display:none}
-
-/* ========== 内容区 ========== */
-.main{min-width:0;padding-bottom:60px;margin-left:var(--rail-w);transition:margin-left .22s cubic-bezier(.4,0,.2,1)}
-.wrap{width:min(1180px,100%);margin:0 auto;padding:0 clamp(16px,4vw,44px)}
-
-/* ========== 首屏：星云 ========== */
-.hero{
-  position:relative;isolation:isolate;overflow:hidden;
-  min-height:clamp(340px,46vh,520px);display:flex;align-items:center;
-  background:#0B1020 center 42%/cover no-repeat url("background-hd.jpg");
-}
-.hero::before{
-  content:"";position:absolute;inset:0;z-index:-1;
-  /* 只在左侧压暗给文字让路，右边尽量保住插画；底部一小段淡到纸色做过渡 */
-  background:
-    linear-gradient(90deg, rgba(6,10,26,.80) 0%, rgba(6,10,26,.55) 40%, rgba(6,10,26,0) 66%),
-    linear-gradient(180deg, rgba(6,10,26,0) 74%, rgba(244,242,237,.55) 90%, var(--paper) 100%);
-}
-.hero .wrap{padding-top:clamp(38px,7vw,64px);padding-bottom:clamp(64px,10vw,96px)}
-.hero h1{
-  margin:0 0 14px;font-family:var(--font-body);font-weight:800;color:#fff;
-  font-size:clamp(28px,4.6vw,50px);line-height:1.2;letter-spacing:-.005em;
-  text-shadow:0 2px 24px rgba(0,0,0,.35);
-}
-.hero h1 em{font-style:normal;color:#FFC97A}
-.hero p{
-  margin:0;max-width:34em;color:rgba(255,255,255,.88);
-  font-size:clamp(14px,1.9vw,17px);line-height:1.75;
-}
-
-/* ========== 区块标题 ========== */
-section{padding:clamp(34px,5vw,58px) 0 0}
-.sec-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px;margin-bottom:20px}
-.sec-head h2{
-  margin:0;font-size:clamp(18px,2.4vw,22px);font-weight:700;letter-spacing:.01em;
-  display:flex;align-items:center;gap:14px;
-}
-/* 标题后面拖一根细线，像印刷目录的分隔，而不是“竖条 + 大标题”的模板感 */
-.sec-head h2::after{content:"";width:clamp(28px,14vw,200px);height:1px;background:#D9D3C7}
-.sec-head .sub{font-size:13px;color:var(--muted)}
-
-/* ========== 卡片网格 ========== */
-.grid{display:grid;gap:14px}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
-
-.card{
-  position:relative;display:flex;flex-direction:column;gap:6px;
-  padding:18px 18px 16px;border-radius:14px;
-  background:var(--surface);border:1px solid var(--line);
-  transition:background .15s ease,border-color .15s ease;
-}
-.card:hover{background:#FCFBF7;border-color:#D3CCBE}
-.card .ico{font-size:20px;line-height:1;margin:0 0 4px}
-/* 封面：有 covers/<域名>.jpg 时才显示（脚本自动挂载），没有就退回 emoji 色块 */
-.card .cover{display:none;width:100%;height:84px;object-fit:cover;object-position:top center;
-  border-radius:8px;margin:0 0 4px;background:#F2E6D4}
-.card h3{margin:0;font-size:17px;font-weight:650;line-height:1.4;letter-spacing:.01em}
-.card p{margin:0;font-size:13.5px;line-height:1.65;color:var(--muted)}
-.card .go{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:500;color:var(--muted)}
-.card:hover .go{color:var(--brand-deep)}
-
-.card .tag{
-  position:absolute;top:14px;right:14px;max-width:52%;
-  padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;line-height:1.5;
-  color:#6C5B47;background:#F2E9D9;border:1px solid var(--line);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.card .tag.hot{color:#9A4A09;background:#FCE7D2;border-color:#F2CFA8}
-.card .official{
-  display:inline-block;margin-left:6px;padding:1px 7px;border-radius:6px;
-  font-size:11px;font-weight:600;vertical-align:2px;
-  color:#0E5A3C;background:#DCF2E6;
-}
-.card.big{padding:24px}
-.card.big h3{font-size:19px}
-
-/* ========== 胶囊 ========== */
-.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
-.chip{
-  display:inline-flex;align-items:center;min-height:38px;padding:0 15px;border-radius:999px;
-  font-size:13.5px;color:#4A3B2C;background:var(--surface);border:1px solid var(--line);
-  transition:background .15s ease,border-color .15s ease,color .15s ease;
-}
-.chip:hover{background:var(--brand-tint);border-color:#F0C9A3;color:var(--brand-deep)}
-
-/* ========== 搜索 ========== */
-.searchbar{
-  display:flex;align-items:center;gap:10px;margin:clamp(22px,3vw,30px) 0 0;
-  padding:0 16px;min-height:48px;border-radius:14px;
-  background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);
-}
-.searchbar input{
-  flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:15px;color:var(--ink);
-  padding:12px 0;outline:none;
-}
-.searchbar input::placeholder{color:#A08D75}
-.searchbar .hint{font-size:12px;color:var(--muted);white-space:nowrap}
-.empty{display:none;padding:28px 4px;color:var(--muted);font-size:14px}
-body.is-filtering .empty{display:block}
-
-/* ========== 页脚 ========== */
-footer{
-  margin-top:clamp(46px,7vw,76px);padding:34px 0 calc(30px + env(safe-area-inset-bottom));
-  background:#1B1611;color:#C9BBA8;font-size:13px;
-}
-footer .wrap{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-between}
-
-/* ============================================================
-   响应式
-   ============================================================ */
-@media (max-width:1180px){
-  .g4{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-@media (max-width:1024px){
-  /* 用 minmax(0,1fr) 而不是 1fr：避免内容把网格撑宽、整页出现横向滚动 */
-  .shell{grid-template-columns:minmax(0,1fr)}
-  /* 窄屏：默认收起成图标条，点按钮展开（同样是推开内容） */
-  body{--rail-w:124px}
-  body.is-expanded{--rail-w:248px}
-  .rail{padding:14px 8px;gap:14px}
-  .brand img{width:46px;height:46px}
-  /* 展开是「推开」内容，不是盖在上面，所以不需要遮罩 */
-  .scrim{display:none}
-
-  .g3,.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .contact-widget{display:none}
-}
-@media (max-width:640px){
-  /* 窄屏首屏：增强文字区域对比度，同时保留背景插画 */
-  .hero::before{
-    background:
-      linear-gradient(180deg, rgba(6,10,26,.58) 0%, rgba(6,10,26,.66) 62%, rgba(244,242,237,.92) 96%, var(--paper) 100%);
-  }
-  .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}
-  .hero{min-height:auto}
-  .card{padding:16px}
-  .card .ico{width:42px;height:42px;font-size:21px}
-  .card h3{font-size:16px}
-  section{padding-top:32px}
-  .searchbar{margin-top:16px}
-  .searchbar .hint{display:none}
-}
-/* 触屏不触发悬停位移 */
-@media (hover:none){
-  .card:hover{transform:none;box-shadow:var(--shadow)}
-}
-
-/* ============================================================
-   手机（≤768）：顶部 logo + 菜单；导航点开是整屏面板；卡片两列带封面
-   ============================================================ */
-.mobilebar{display:none}
-@media (max-width:768px){
-  .mobilebar{
-    display:flex;align-items:center;position:sticky;top:0;z-index:60;
-    padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));
-    background:#FBF5EA;border-bottom:1px solid var(--line);
-  }
-  .mobilebar .bar-brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
-  .mobilebar img{width:38px;height:38px;object-fit:contain}
-  .mobilebar .bar-menu{
-    margin-left:auto;width:40px;height:40px;display:grid;place-items:center;
-    border:0;background:transparent;cursor:pointer;padding:0;color:#4A423A;
-  }
-  .mobilebar .bar-menu svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
-
-  .main{margin-left:0 !important}
-  .rail{
-    width:100%;max-width:none;padding:16px 18px;gap:14px;overflow-y:auto;
-    border-right:0;transform:translateX(-100%);
-    transition:transform .26s cubic-bezier(.4,0,.2,1);
-  }
-  body.is-expanded .rail{transform:none}
-
-  .rail-toggle{position:absolute;top:16px;right:16px;left:auto;transform:none}
-
-  .brandbar{justify-content:flex-start;width:100%;padding:0}
-  body:not(.is-expanded) .brand .name{display:flex}
-  body:not(.is-expanded) .nav a .lb{display:inline}
-  .nav a{justify-content:flex-start;padding:12px 10px;gap:12px;font-size:16px}
-  .rail .cta{display:flex}
-  .rail .note{display:block}
-
-  /* 两列卡片：上面一块封面，下面标题 + 两行描述 */
-  .g2,.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .card{padding:10px 10px 12px;gap:6px;border-radius:12px}
-  .card .ico{
-    display:grid;place-items:center;width:100%;height:84px;margin:0 0 4px;
-    font-size:40px;line-height:1;border-radius:8px;
-    background:linear-gradient(155deg,#FBF1E3,#F2E6D4);
-  }
-  .card h3{font-size:15px;line-height:1.35}
-  .card p{font-size:12.5px;line-height:1.5;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .card .go{display:none}
-  .card .cover{display:block}
-  .card.has-cover .ico{display:none}
-  .card .tag{font-size:10.5px;padding:2px 6px;max-width:56%;top:16px;right:16px}
-}
-@media (max-width:380px){
-  .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}
-}
-
-/* 锚点滚动时给固定顶栏留位置 */
-section[id]{scroll-margin-top:74px}
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+<link rel="stylesheet" href="css/mobile.css">
 </head>
-<body>
+<body class="is-expanded">
 
 <div class="shell">
-  <!-- ================= 左栏导航 ================= -->
+
+  <!-- ========== 左栏（PC 显示为固定侧栏，手机显示为抽屉） ========== -->
   <aside class="rail" id="rail" aria-label="主导航">
     <div class="brandbar">
       <a class="brand" href="#top">
         <img src="logo.png" alt="金诺竞赛">
         <span class="name"><b>金诺竞赛</b><span>资源站</span></span>
       </a>
-      <button class="rail-toggle" id="railToggle" aria-label="收起导航" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5"/></svg></button>
+      <button class="rail-toggle" id="railToggle" aria-label="收起导航" aria-expanded="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5"/></svg>
+      </button>
     </div>
 
+    <!-- 导航：href 对应下面各板块的 id -->
     <nav class="nav">
       <a href="#race" title="竞赛入口"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18"/><path d="M5 4h11l-2 4 2 4H5"/></svg><span class="lb">竞赛入口</span></a>
       <a href="#cup" title="杯赛"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 6H5v2a4 4 0 0 0 4 4M16 6h3v2a4 4 0 0 1-4 4M12 12v4M9 20h6M10 16h4"/></svg><span class="lb">杯赛</span></a>
@@ -378,6 +61,7 @@ section[id]{scroll-margin-top:74px}
     <p class="note">外链均为第三方网站，内容以官方发布为准。</p>
   </aside>
 
+  <!-- ========== 右侧联系浮窗（PC） ========== -->
   <aside class="contact-widget" aria-labelledby="contactWidgetTitle">
     <h2 id="contactWidgetTitle">联系我们</h2>
     <a class="contact-entry" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzY4NTQ2Njk0Mg==&amp;scene=124#wechat_redirect" target="_blank" rel="noopener noreferrer" aria-label="打开金诺竞赛公众号">
@@ -390,12 +74,10 @@ section[id]{scroll-margin-top:74px}
     </div>
   </aside>
 
-  <div class="scrim" id="scrim" aria-hidden="true"></div>
-
-  <!-- ================= 主内容 ================= -->
+  <!-- ========== 主内容 ========== -->
   <div class="main" id="top">
 
-    <!-- 手机端顶栏：logo + 菜单（点开是整屏导航面板） -->
+    <!-- 手机顶栏 -->
     <div class="mobilebar">
       <a class="bar-brand" href="#top"><img src="logo.png" alt="金诺竞赛"><span>金诺竞赛资源站</span></a>
       <button class="bar-menu" id="menuBtn" aria-label="打开菜单">
@@ -403,7 +85,7 @@ section[id]{scroll-margin-top:74px}
       </button>
     </div>
 
-    <!-- 首屏：星云背景 -->
+    <!-- 首屏：背景图在 css/base.css 的 .hero 里 -->
     <div class="hero">
       <div class="wrap">
         <h1>竞赛升学与成长资源，<em>一站直达</em></h1>
@@ -411,6 +93,7 @@ section[id]{scroll-margin-top:74px}
       </div>
     </div>
 
+    <!-- 站内搜索 -->
     <div class="wrap">
       <div class="searchbar">
         <input id="q" type="search" placeholder="搜索赛事、工具、年级…" aria-label="站内搜索">
@@ -418,239 +101,16 @@ section[id]{scroll-margin-top:74px}
       <p class="empty" id="empty">没有匹配的内容，换个词试试。</p>
     </div>
 
-    <!-- 竞赛入口 -->
-    <section id="race">
-      <div class="wrap">
-        <div class="sec-head"><h2>竞赛入口</h2></div>
-        <div class="grid g3">
-          <a class="card" href="https://www.cms.org.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">➗</div>
-            <h3>数学竞赛</h3>
-            <p>中国数学会官网</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://www.cps-net.org.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">⚛️</div>
-            <h3>物理竞赛</h3>
-            <p>中国物理学会官网</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://www.chemsoc.org.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🧪</div>
-            <h3>化学竞赛</h3>
-            <p>中国化学会官网</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://www.czs.org.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🧬</div>
-            <h3>生物竞赛</h3>
-            <p>生物竞赛相关通知与入口</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://www.noi.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">💻</div>
-            <h3>信息学竞赛</h3>
-            <p>全国青少年信息学奥林匹克竞赛（NOI）官网</p>
-            <div class="go">进入官网</div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 杯赛模块：结构在 sections/cup.js，内容在 data/cup.js，这里只留挂载点 -->
+    <!-- ========== 8 个板块挂载点 ==========
+         每个板块的标题、网格、内容都在对应文件里，这里只留一行 -->
+    <div id="raceMount"></div>
     <div id="cupMount"></div>
-
-    <!-- 升学通道 -->
-    <section id="path">
-      <div class="wrap">
-        <div class="sec-head"><h2>升学通道</h2><!-- <span class="sub">只放官方入口，二手信息容易过期</span> --></div>
-        <div class="grid g2">
-          <a class="card big" href="https://join-tsinghua.edu.cn/gnxs/sxrcpyjh.htm" target="_blank" rel="noopener nofollow">
-            <div class="ico">🎓</div>
-            <h3>清华“丘班”<span class="official">官方</span></h3>
-            <p>丘成桐数学科学领军人才培养计划：简章、报名、测试结果都在清华本科招生网发布，每年 9–10 月出简章。</p>
-            <div class="go">看招生简章</div>
-          </a>
-          <a class="card big" href="https://join-tsinghua.edu.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🏛️</div>
-            <h3>清华大学本科招生网<span class="official">官方</span></h3>
-            <p>强基计划、学科体验营、数学人才培养计划的统一入口。</p>
-            <div class="go">进入网站</div>
-          </a>
-        </div>
-        <div class="grid g2" style="margin-top:14px">
-          <a class="card" href="https://apply.pku.edu.cn/login" target="_blank" rel="noopener nofollow">
-            <div class="ico">📘</div>
-            <h3>北京大学本科招生网<span class="official">官方</span></h3>
-            <p>强基计划、数学英才班等</p>
-            <div class="go">进入网站</div>
-          </a>
-          <a class="card" href="https://zsb.ustc.edu.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🔬</div>
-            <h3>中科大少年班 / 少创班</h3>
-            <p>初中阶段可关注的拔尖通道</p>
-            <div class="go">进入网站</div>
-          </a>
-        </div>
-        <div class="grid g2" style="margin-top:14px">
-          <a class="card" href="https://www.yau-awards.com/" target="_blank" rel="noopener nofollow">
-            <span class="tag">初中可报</span>
-            <div class="ico">🏅</div>
-            <h3>丘成桐中学科学奖</h3>
-            <p>科研类赛事，含数学奖，适合有课题能力的孩子</p>
-            <div class="go">进入官网</div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 丘班测评通道 -->
-    <section id="paper">
-      <div class="wrap">
-        <div class="sec-head"><h2>丘班测评通道</h2><!-- <span class="sub">每月一次，针对六年级，数学能力测试</span> --></div>
-        <div class="grid g3">
-          <a class="card" href="https://mathstalents.com/" target="_blank" rel="noopener nofollow">
-            <span class="tag hot">6 年级</span>
-            <div class="ico">🏅</div>
-            <h3>丘班测评通道（mathstalents）</h3>
-            <p>针对六年级学生进行数学能力测试</p>
-            <div class="go">进入官网</div>
-          </a>
-          <a class="card" href="https://mp.weixin.qq.com/s/o_ho_dFj4XBm_RkyUEmc6w?scene=1&amp;click_id=1422871734" target="_blank" rel="noopener nofollow">
-            <div class="ico">🔈</div>
-            <h3>2026 年云师附丘班通知</h3>
-            <p>2026 年云师附丘班未自行举办，而是使用 mathstalents 测评结果初筛</p>
-            <div class="go">进入公众号</div>
-          </a>
-          <a class="card" href="http://223.4.248.210:9100/inno_tal/qctsnb/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🔈</div>
-            <h3>2025 年云师附丘班通知</h3>
-            <p>历史通知存档</p>
-            <div class="go">进入网站</div>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 杯赛真题 -->
-    <section id="test">
-      <div class="wrap">
-        <div class="sec-head"><h2>杯赛真题</h2><!-- <span class="sub">历年真题与公告</span> --></div>
-        <div class="chips">
-          <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">AMC 8/10</a>
-          <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">袋鼠数学</a>
-          <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">华数之星</a>
-           <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">迎春之星</a>
-           <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">希望数学</a>
-            <a class="chip" href="https://pan.baidu.com/s/1DXeEmN43hoYVdMSKhvIj2A?pwd=7f3p " target="_blank" rel="noopener nofollow">maths talents</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 益智游戏 -->
-    <section id="game">
-      <div class="wrap">
-        <div class="sec-head"><h2>益智游戏</h2><!-- <span class="sub">标注了适合年级，孩子能自己玩着练</span> --></div>
-        <div class="grid g4">
-          <a class="card" href="https://sudoku.com/zh" target="_blank" rel="noopener nofollow">
-            <span class="tag">4 年级+</span><div class="ico">🔢</div>
-            <h3>今日数独</h3><p>6 种难度，支持每日挑战</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/njq/" target="_blank" rel="noopener nofollow">
-            <span class="tag hot">1-6 年级 · 对战</span><div class="ico">🐂</div>
-            <h3>牛角棋</h3><p>对战益智游戏</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/jing/" target="_blank" rel="noopener nofollow">
-            <span class="tag">3 年级+</span><div class="ico">✏️</div>
-            <h3>飞行井字棋</h3><p>不同于一般井字棋，棋子可以飞哦！</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/cube/" target="_blank" rel="noopener nofollow">
-            <span class="tag">3 年级+</span><div class="ico">🕹️</div>
-            <h3>魔方还原</h3><p>看看你需要多久</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/szhrd/" target="_blank" rel="noopener nofollow">
-            <span class="tag">逻辑规划</span><div class="ico">🧩</div>
-            <h3>数字华容道</h3><p>移动数字方块，按顺序完成排列</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/cfxxl/" target="_blank" rel="noopener nofollow">
-            <span class="tag">乘法口诀</span><div class="ico">✖️</div>
-            <h3>乘法消消乐</h3><p>用消除游戏练习乘法口诀</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/fjzys/" target="_blank" rel="noopener nofollow">
-            <span class="tag">数与代数</span><div class="ico">🔎</div>
-            <h3>数字碰碰乐</h3><p>拖动小数碰大数，练习分解质因数</p><div class="go">去玩</div>
-          </a>
-          <a class="card" href="https://edui123.com/24/" target="_blank" rel="noopener nofollow">
-            <span class="tag">心算挑战</span><div class="ico">🧠</div>
-            <h3>24 点挑战</h3><p>用四则运算组合出 24，锻炼心算与思维</p><div class="go">去玩</div>
-          </a>
-        </div>
-        <div class="chips">
-          <a class="chip" href="https://edui123.com/xiaogou/" target="_blank" rel="noopener nofollow">自由狗</a>
-          <a class="chip" href="https://edui123.com/hrd/" target="_blank" rel="noopener nofollow">方向华容道</a>
-          <a class="chip" href="https://edui123.com/wzq/" target="_blank" rel="noopener nofollow">数对五子棋</a>
-          <a class="chip" href="https://edui123.com/chaidan/" target="_blank" rel="noopener nofollow">拆弹专家（猜数字）</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 工具 -->
-    <section id="tool">
-      <div class="wrap">
-        <div class="sec-head"><h2>数学工具</h2><!-- <span class="sub">讲题、作图、演示都用得上</span> --></div>
-        <div class="grid g3">
-          <a class="card" href="https://www.geogebra.org/calculator" target="_blank" rel="noopener nofollow">
-            <span class="tag hot">讲题神器</span><div class="ico">📐</div>
-            <h3>GeoGebra 图形计算器</h3>
-            <p>函数图像、动点轨迹、几何变换，课堂演示首选</p><div class="go">打开</div>
-          </a>
-          <a class="card" href="https://www.geogebra.org/3d" target="_blank" rel="noopener nofollow">
-            <span class="tag hot">立体几何</span><div class="ico">🧊</div>
-            <h3>GeoGebra 3D</h3>
-            <p>旋转体、截面、展开图、三视图——立体几何专用</p><div class="go">打开</div>
-          </a>
-          <a class="card" href="https://www.desmos.com/calculator?lang=zh-CN" target="_blank" rel="noopener nofollow">
-            <div class="ico">📈</div>
-            <h3>Desmos</h3>
-            <p>中文界面，作图快，适合函数与不等式</p><div class="go">打开</div>
-          </a>
-        </div>
-        <div class="chips">
-          <a class="chip" href="https://www.latexlive.com/" target="_blank" rel="noopener nofollow">LaTeX 公式编辑</a>
-          <a class="chip" href="https://excalidraw.com/" target="_blank" rel="noopener nofollow">Excalidraw 白板</a>
-          <a class="chip" href="https://www.desmos.com/3d?lang=zh-CN" target="_blank" rel="noopener nofollow">Desmos 3D</a>
-          <a class="chip" href="https://www.ilovepdf.com/zh-cn" target="_blank" rel="noopener nofollow">PDF 工具</a>
-          <a class="chip" href="https://tinypng.com/" target="_blank" rel="noopener nofollow">图片压缩</a>
-          <a class="chip" href="https://cli.im/" target="_blank" rel="noopener nofollow">二维码</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI 助手 -->
-    <section id="ai">
-      <div class="wrap">
-        <div class="sec-head"><h2>AI 助手</h2><!-- <span class="sub">只放国内能直连的</span> --></div>
-        <div class="grid g3">
-          <a class="card" href="https://chat.deepseek.com/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🐋</div><h3>DeepSeek</h3>
-            <p>讲题、出同类题、解释错因</p><div class="go">打开</div>
-          </a>
-          <a class="card" href="https://kimi.moonshot.cn/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🌙</div><h3>Kimi</h3>
-            <p>长文档、真题卷快速读</p><div class="go">打开</div>
-          </a>
-          <a class="card" href="https://www.doubao.com/" target="_blank" rel="noopener nofollow">
-            <div class="ico">🫘</div><h3>豆包</h3>
-            <p>语音问、拍照搜题</p><div class="go">打开</div>
-          </a>
-        </div>
-        <div class="chips">
-          <a class="chip" href="https://tongyi.aliyun.com/" target="_blank" rel="noopener nofollow">通义千问</a>
-          <a class="chip" href="https://chatglm.cn/" target="_blank" rel="noopener nofollow">智谱清言</a>
-          <a class="chip" href="https://yiyan.baidu.com/" target="_blank" rel="noopener nofollow">文心一言</a>
-        </div>
-      </div>
-    </section>
+    <div id="pathMount"></div>
+    <div id="paperMount"></div>
+    <div id="testMount"></div>
+    <div id="gameMount"></div>
+    <div id="toolMount"></div>
+    <div id="aiMount"></div>
 
     <footer>
       <div class="wrap">
@@ -661,93 +121,30 @@ section[id]{scroll-margin-top:74px}
   </div>
 </div>
 
-<!-- 模块装配：数据 → 结构 → 渲染，顺序不能反 -->
+<!-- ========== 脚本加载顺序（不能打乱） ==========
+     1) 所有 data/*.js      → 先把内容挂到 window.SITE_DATA
+     2) 所有 sections/*.js  → 再用内容生成每个 <section>
+     3) data/render.js      → 最后把 [data-module] 填满
+     4) js/app.js           → 交互（导航/搜索） -->
+<script src="data/race.js"></script>
 <script src="data/cup.js"></script>
+<script src="data/path.js"></script>
+<script src="data/paper.js"></script>
+<script src="data/test.js"></script>
+<script src="data/game.js"></script>
+<script src="data/tool.js"></script>
+<script src="data/ai.js"></script>
+
+<script src="sections/race.js"></script>
 <script src="sections/cup.js"></script>
+<script src="sections/path.js"></script>
+<script src="sections/paper.js"></script>
+<script src="sections/test.js"></script>
+<script src="sections/game.js"></script>
+<script src="sections/tool.js"></script>
+<script src="sections/ai.js"></script>
+
 <script src="data/render.js"></script>
-
-<script>
-/* 左栏展开/收起：桌面默认展开、窄屏默认收起；点按钮切换，内容跟着推开 */
-(function(){
-  var body = document.body;
-  var btn = document.getElementById('railToggle');
-  var rail = document.getElementById('rail');
-  var mq = window.matchMedia('(max-width:1024px)');
-
-  function setExpanded(on){
-    body.classList.toggle('is-expanded', on);
-    btn.setAttribute('aria-expanded', on ? 'true' : 'false');
-    btn.setAttribute('aria-label', on ? '收起导航' : '展开导航');
-  }
-  setExpanded(!mq.matches);
-
-  btn.addEventListener('click', function(){
-    setExpanded(!body.classList.contains('is-expanded'));
-  });
-  /* 手机顶栏的菜单按钮：同一个开关 */
-  var barBtn = document.getElementById('menuBtn');
-  if (barBtn) barBtn.addEventListener('click', function(){
-    setExpanded(!body.classList.contains('is-expanded'));
-  });
-  /* 窄屏点导航后自动收起，省一次点击 */
-  rail.addEventListener('click', function(e){
-    if (mq.matches && e.target.closest('a')) setExpanded(false);
-  });
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && mq.matches) setExpanded(false);
-  });
-  mq.addEventListener('change', function(e){ setExpanded(!e.matches); });
-})();
-
-/* 站内搜索：按卡片文字实时过滤 */
-(function(){
-  var q = document.getElementById('q');
-  var hint = document.getElementById('hint');
-  var empty = document.getElementById('empty');
-  var cards = Array.prototype.slice.call(document.querySelectorAll('.card, .chip'));
-  var total = cards.length;
-  if (hint) hint.textContent = '共 ' + total + ' 条';
-
-  function run(){
-    var kw = q.value.trim().toLowerCase();
-    var shown = 0;
-    cards.forEach(function(el){
-      var hit = !kw || el.textContent.toLowerCase().indexOf(kw) !== -1;
-      el.style.display = hit ? '' : 'none';
-      if (hit) shown++;
-    });
-    if (hint) hint.textContent = kw ? (shown + ' / ' + total) : ('共 ' + total + ' 条');
-    document.body.classList.toggle('is-filtering', !!kw && shown === 0);
-    empty.style.display = (kw && shown === 0) ? 'block' : 'none';
-
-    /* 整段都没有命中时，把这一节的标题也收起来 */
-    document.querySelectorAll('section').forEach(function(sec){
-      var vis = sec.querySelectorAll('.card:not([style*="none"]), .chip:not([style*="none"])').length;
-      sec.style.display = (kw && vis === 0) ? 'none' : '';
-    });
-  }
-  q.addEventListener('input', run);
-})();
-
-/* 自动挂封面：covers/<域名>.jpg 存在就用它替换 emoji 色块，不存在保持原样 */
-(function(){
-  var cards = document.querySelectorAll('.card');
-  Array.prototype.forEach.call(cards, function(card){
-    var href = card.getAttribute('href') || '';
-    var host = '';
-    try { host = new URL(href, location.href).hostname.replace(/^www\./, ''); } catch (e) { return; }
-    if (!host) return;
-    var img = new Image();
-    img.onload = function(){
-      if (img.naturalWidth < 40) return;
-      img.className = 'cover';
-      img.alt = '';
-      card.insertBefore(img, card.firstChild);
-      card.classList.add('has-cover');
-    };
-    img.src = 'covers/' + host + '.jpg';
-  });
-})();
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>

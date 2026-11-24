@@ -1,47 +1,57 @@
 /* ============================================================
-   通用渲染：把 SITE_DATA 里的数组渲染成卡片
+   通用渲染：把 SITE_DATA 里的数组渲染成「卡片」或「胶囊」
    ------------------------------------------------------------
-   页面上任何一个 <div class="grid" data-module="键名"></div>
-   都会被自动填充成卡片。以后别的模块也能这么拆。
-   不需要改这个文件，除非要改卡片长什么样。
+   用法：
+     <div class="grid g3" data-module="race"></div>     → 卡片
+     <div class="chips"    data-module="testChips"></div> → 胶囊
+   卡片字段：icon / tag / hot / title / desc / url / go / big / official
+   胶囊字段：title / url
+   要改卡片长相，只改这个文件；要改内容，只改 data/*.js
    ============================================================ */
 (function () {
+  var data = window.SITE_DATA || {};
+
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
   }
 
-  var data = window.SITE_DATA || {};
+  function card(it) {
+    var cls = "card" + (it.big ? " big" : "");
+    var tag = it.tag
+      ? '<span class="tag' + (it.hot ? " hot" : "") + '">' + esc(it.tag) + "</span>"
+      : "";
+    var off = it.official ? '<span class="official">官方</span>' : "";
+    return (
+      '<a class="' + cls + '" href="' + esc(it.url) + '" target="_blank" rel="noopener nofollow">' +
+        tag +
+        '<div class="ico">' + esc(it.icon || "🔗") + "</div>" +
+        "<h3>" + esc(it.title) + off + "</h3>" +
+        (it.desc ? "<p>" + esc(it.desc) + "</p>" : "") +
+        '<div class="go">' + esc(it.go || "进入官网") + "</div>" +
+      "</a>"
+    );
+  }
 
-  document.querySelectorAll("[data-module]").forEach(function (grid) {
-    var key = grid.getAttribute("data-module");
+  function chip(it) {
+    return (
+      '<a class="chip" href="' + esc(it.url) + '" target="_blank" rel="noopener nofollow">' +
+        esc(it.title) +
+      "</a>"
+    );
+  }
+
+  document.querySelectorAll("[data-module]").forEach(function (host) {
+    var key = host.getAttribute("data-module");
     var list = data[key];
 
     if (!list || !list.length) {
-      grid.innerHTML = '<p style="color:#7A7266;font-size:13.5px">暂无内容</p>';
+      host.innerHTML = '<p style="color:#7A7266;font-size:13.5px">暂无内容</p>';
       return;
     }
 
-    grid.innerHTML = list.map(function (it) {
-      var tag = it.tag
-        ? '<span class="tag' + (it.hot ? " hot" : "") + '">' + esc(it.tag) + "</span>"
-        : "";
-      return (
-        '<a class="card" href="' + esc(it.url) + '" target="_blank" rel="noopener nofollow">' +
-          tag +
-          '<div class="ico">' + esc(it.icon || "🔗") + "</div>" +
-          "<h3>" + esc(it.title) + "</h3>" +
-          (it.desc ? "<p>" + esc(it.desc) + "</p>" : "") +
-          '<div class="go">' + esc(it.go || "进入官网") + "</div>" +
-        "</a>"
-      );
-    }).join("");
-
-    // 标题右边的「更新于 …」
-    /*var stamp = document.getElementById(key + "Updated");
-    if (stamp && data[key + "Updated"]) {
-      stamp.textContent = "更新于 " + data[key + "Updated"];
-    }*/
+    var isChips = host.classList.contains("chips") || host.getAttribute("data-kind") === "chips";
+    host.innerHTML = list.map(isChips ? chip : card).join("");
   });
 })();

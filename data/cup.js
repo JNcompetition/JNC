@@ -5,7 +5,7 @@
    不用碰 index.html。
 
    每一项的字段：
-     icon   封面 emoji（随便换）
+     icon   图标 emoji（随便换）
      tag    右上角角标，留空字符串 "" 就不显示
      hot    角标是否用橙色（true=重点，false=普通，默认 false）
      title  标题（必填）
